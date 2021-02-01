@@ -11,21 +11,17 @@ window.onkeyup = function(e)
 			case 37:
        console.log("left");
        ourShip.turnLeft();
-       heldax -=5;
        break;
       case 40:
        console.log("down");
-       helday +=5;
        break;
       case 38:
        console.log("up");
        ourShip.accelerate();
-       helday -=5;
        break;
       case 39:
        console.log("right");
        ourShip.turnRight();
-       heldax +=5;
        break;
       default:
         console.log(" you pressed some other key. it's number was "+e.keyCode);
@@ -33,16 +29,18 @@ window.onkeyup = function(e)
     e.preventDefault();
   };
 
-var heldax = 10;
-var helday = 10;
-
 class Spaceship {
   
   constructor() {
+    
+    // how fast we turn on one button press
     this.turn = 0.2;
     this.x = 10;
     this.y = 10;
+
+    // angle is a number in radians, not degrees
     this.angle = 0;
+
     this.velocity = 0;
   }
 
@@ -54,11 +52,13 @@ class Spaceship {
     this.angle += this.turn;
   }
 
+  //give spaceship a boost
   accelerate(){
     this.velocity = 2;
   }
 
   move(){
+    //omg triginmetry! 
     this.x += this.velocity * Math.cos(this.angle);
     this.y += this.velocity * Math.sin(this.angle);
 
@@ -69,20 +69,23 @@ class Spaceship {
   render(ctx){
     ctx.fillStyle = 'white';
 
+   
+    var length = 24;
+    var wingSweepRadians = .3;
+
     ctx.beginPath();
     ctx.moveTo(this.x,this.y);
-    var bx1 = this.x + (20 * Math.cos(this.angle + Math.PI - 1));
-    var by1 = this.y + (20 * Math.sin(this.angle + Math.PI - 1))
-    var bx2 = this.x + (20 * Math.cos(this.angle + Math.PI + 1));
-    var by2 = this.y + (20 * Math.sin(this.angle + Math.PI + 1))
+    var backLeftX = this.x + (length * Math.cos(this.angle + Math.PI - wingSweepRadians));
+    var backLeftY = this.y + (length * Math.sin(this.angle + Math.PI - wingSweepRadians))
+    var backRightX = this.x + (length * Math.cos(this.angle + Math.PI + wingSweepRadians));
+    var BackRightY = this.y + (length * Math.sin(this.angle + Math.PI + wingSweepRadians))
     
-    ctx.lineTo(bx1, by1);
-    ctx.lineTo(bx2, by2);
+    ctx.lineTo(backLeftX, backLeftY);
+    ctx.lineTo(backRightX, BackRightY);
 
-    // console.log("bx1: "+bx1+" by1:"+by1+" bx2:"+bx2+" by2:"+by2+" "+this.angle + Math.PI + 1)
+    // console.log("backLeftX: "+backLeftX+" backLeftY:"+backLeftY+" backRightX:"+backRightX+" BackRightY:"+BackRightY+" "+this.angle + Math.PI + 1)
     ctx.fill();
 
-    // ctx.fillRect(this.x,this.y,10,10); 
   }
 }
 // ls --help 
@@ -104,17 +107,16 @@ class Enemy{
   }
 };
 var enemies = [];
-var ourShip = new Spaceship();
-
+var ourShip;
 
 Math.random()
 Math.floor(Math.random()*100)
 function render(){
+
+  //clear the screen
   ctx.fillStyle = 'black';
   ctx.fillRect(0, 0, screenWidth, screenHeight);
-  // ctx.fillStyle = 'brown';
-  // ctx.fillRect(heldax,helday,10,10); 
-
+  
   ourShip.render(ctx);
   enemies.forEach(e => e.render(ctx));
 }
@@ -123,24 +125,29 @@ function moveEnemies(){
   enemies.forEach(e => e.move());
 }
 
+// this is the what needs to happen every loop
 function mainLoop(){
+  
+  // move things
   moveEnemies();  
-
   ourShip.move();
-
-  // ctx.fillStyle = 'green';
-  // ctx.fillRect(0, 0, screenWidth, screenHeight);
-  //console.log("mainLoop");
-
+  
+  //draw things
   render();
+
+  // wait from things to draw, then call ourselves again so it loops
   window.requestAnimationFrame(mainLoop);
 }
 
 function init(){
  enemies.push(new Enemy(90,90));
  enemies.push(new Enemy(90,90));
+ ourShip = new Spaceship();
 }
 
+
+// when the game starts, create the objects
+// then start the loop
  window.onload = function(){
   init();
   mainLoop();
