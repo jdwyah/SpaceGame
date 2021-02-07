@@ -3,6 +3,7 @@ const canvas = document.getElementById('my-first-canvas');
 const ctx = canvas.getContext('2d');
 var screenHeight = canvas.height;
 var screenWidth = canvas.width;
+var quit = false;
 window.onkeyup = function(e)
 	{
     e.stopPropagation();
@@ -23,24 +24,59 @@ window.onkeyup = function(e)
        console.log("right");
        ourShip.turnRight();
        break;
+      case 83: // 's'
+       console.log("shoot");
+       ourShip.shoot();
+       break;
+      case 81: // 'q'
+       console.log("quit");
+       quit = true;
+       break;
       default:
         console.log(" you pressed some other key. it's number was "+e.keyCode);
     }
     e.preventDefault();
   };
 
+
+var enemies = [];
+var missiles = [];
+var ourShip;
+
+class Missile {
+   constructor(spaceship) {
+    this.angle = spaceship.angle;
+    this.x = spaceship.x;
+    this.y = spaceship.y;
+    this.velocity = 1;
+  }
+  render(ctx){
+    ctx.fillStyle = 'white';
+    ctx.strokeStyle = "#FF0000";
+    //ctx.fillRect(this.x,this.y,5,5); 
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, 5, 0, 2 * Math.PI, false);
+    // ctx.stroke();
+    ctx.fill();
+  }
+
+  move(){
+    this.x += this.velocity * Math.cos(this.angle);
+    this.y += this.velocity * Math.sin(this.angle);
+  }
+}
 class Spaceship {
   
   constructor() {
-    
     // how fast we turn on one button press
-    this.turn = 0.2;
+    this.turn = (Math.PI / 8); 
     this.x = 10;
     this.y = 10;
-
+    
+    // (Math.PI / 2)  = about 3.14158162.....
     // angle is a number in radians, not degrees
+    // a full turn is 2PI or about 6.28 
     this.angle = 0;
-
     this.velocity = 0;
   }
 
@@ -52,6 +88,9 @@ class Spaceship {
     this.angle += this.turn;
   }
 
+  shoot(){
+    missiles.push(new Missile(this));
+  }
   //give spaceship a boost
   accelerate(){
     this.velocity = 2;
@@ -64,6 +103,8 @@ class Spaceship {
 
     // apply friction
     this.velocity = this.velocity * .98;
+
+    missiles.forEach(m => m.move());
   }
 
   render(ctx){
@@ -78,13 +119,13 @@ class Spaceship {
     var backLeftX = this.x + (length * Math.cos(this.angle + Math.PI - wingSweepRadians));
     var backLeftY = this.y + (length * Math.sin(this.angle + Math.PI - wingSweepRadians))
     var backRightX = this.x + (length * Math.cos(this.angle + Math.PI + wingSweepRadians));
-    var BackRightY = this.y + (length * Math.sin(this.angle + Math.PI + wingSweepRadians))
+    var backRightY = this.y + (length * Math.sin(this.angle + Math.PI + wingSweepRadians))
     
     ctx.lineTo(backLeftX, backLeftY);
-    ctx.lineTo(backRightX, BackRightY);
-
-    // console.log("backLeftX: "+backLeftX+" backLeftY:"+backLeftY+" backRightX:"+backRightX+" BackRightY:"+BackRightY+" "+this.angle + Math.PI + 1)
+    ctx.lineTo(backRightX, backRightY);
     ctx.fill();
+
+    missiles.forEach(m => m.render(ctx));
 
   }
 }
@@ -94,6 +135,7 @@ class Enemy{
  constructor(x, y) {
     this.x = x;
     this.y = y;
+    this.alive = true;
   }
 
   render(ctx){
@@ -106,8 +148,7 @@ class Enemy{
     this.y += Math.floor(Math.random()*10) - 4.5;
   }
 };
-var enemies = [];
-var ourShip;
+
 
 Math.random()
 Math.floor(Math.random()*100)
@@ -136,7 +177,9 @@ function mainLoop(){
   render();
 
   // wait from things to draw, then call ourselves again so it loops
-  window.requestAnimationFrame(mainLoop);
+  if(!quit){
+    window.requestAnimationFrame(mainLoop);
+  }
 }
 
 function init(){
