@@ -96,6 +96,22 @@ class Spaceship {
     this.velocity = 2;
   }
 
+  repositionIfOffScreen(){
+    var buffer = 10;
+    if(this.x > screenWidth + buffer){
+      this.x = -buffer;
+    }
+    if(this.x < -buffer){
+      this.x = screenWidth + buffer;
+    }
+    if(this.y > screenHeight + buffer){
+      this.y = -buffer;
+    }
+    if(this.y < -buffer){
+      this.y = screenHeight + buffer;
+    }
+  }
+
   move(){
     //omg triginmetry! 
     this.x += this.velocity * Math.cos(this.angle);
@@ -103,8 +119,9 @@ class Spaceship {
 
     // apply friction
     this.velocity = this.velocity * .98;
-
     missiles.forEach(m => m.move());
+
+    this.repositionIfOffScreen();
   }
 
   render(ctx){
@@ -150,8 +167,6 @@ class Enemy{
 };
 
 
-Math.random()
-Math.floor(Math.random()*100)
 function render(){
 
   //clear the screen
