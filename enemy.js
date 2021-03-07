@@ -2,7 +2,7 @@ class Enemy{
  constructor(x, y) {
     this.x = x;
     this.y = y;
-    this.size = 10;
+    this.size = 20;
     this.startingHealth = 100;
     this.alive = this.startingHealth;
     allEnemies.add(this);

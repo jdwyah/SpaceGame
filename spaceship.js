@@ -29,19 +29,19 @@ class Spaceship {
     this.velocity = 2;
   }
 
-  repositionIfOffScreen(){
+  repositionIfOffScreen(obj){
     var buffer = 10;
-    if(this.x > screenWidth + buffer){
-      this.x = -buffer;
+    if(obj.x > screenWidth + buffer){
+      obj.x = -buffer;
     }
-    if(this.x < -buffer){
-      this.x = screenWidth + buffer;
+    if(obj.x < -buffer){
+      obj.x = screenWidth + buffer;
     }
-    if(this.y > screenHeight + buffer){
-      this.y = -buffer;
+    if(obj.y > screenHeight + buffer){
+      obj.y = -buffer;
     }
-    if(this.y < -buffer){
-      this.y = screenHeight + buffer;
+    if(obj.y < -buffer){
+      obj.y = screenHeight + buffer;
     }
   }
 
@@ -54,7 +54,7 @@ class Spaceship {
     this.velocity = this.velocity * .98;
     missiles.forEach(m => m.move());
 
-    this.repositionIfOffScreen();
+    this.repositionIfOffScreen(this);
   }
 
   render(ctx){

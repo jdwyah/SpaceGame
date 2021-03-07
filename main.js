@@ -16,9 +16,13 @@ window.onkeyup = function(e)
        console.log("down");
        break;
       case 32:
-       console.log("up");
+       console.log("space");
        ourShip.accelerate();
        break;
+      case 38:
+       console.log("up");
+       ourShip.accelerate();
+       break;  
       case 39:
        console.log("right");
        ourShip.turnRight();

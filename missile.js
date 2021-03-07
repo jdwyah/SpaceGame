@@ -23,11 +23,11 @@ class Missile {
 
   // do these two "rectangles" collide?
   // not quite perfect as is because one of them is a circle
-  collision(otherX,otherY,otherH,otherW){
+  collision(otherX,otherY,otherX2,otherY2){
     if(otherX < this.x + this.size &&
-       otherX + otherW > this.x &&
+       otherX2 > this.x &&
        otherY < this.y + this.size &&
-       otherY + otherH > this.y){
+       otherY2 > this.y){
        return true;
    }
    return false;
